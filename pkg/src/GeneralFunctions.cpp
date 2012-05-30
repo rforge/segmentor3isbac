@@ -25,20 +25,6 @@ bool IsDigit(char &x)
   return true;
 }
 
-bool ToNext(char *Buffer, int &BuffIndex, int BufferSize, char Separator, char Terminator)
-{
-  while ((BuffIndex < BufferSize) && (Buffer[BuffIndex] != Separator) && (Buffer[BuffIndex] != Terminator))
-    BuffIndex++;
-  if (BuffIndex == BufferSize)
-  {
-    std::cerr << "Can NOT drop this element (Buffer finished too soon.)" << std::endl;
-    std::cerr << "Exiting with errcode 121." << std::endl;
-    exit(121);
-  }
-  BuffIndex++;
-	return true;
-}
-
 
 int GetRandomNumber(int MinValue, int MaxValue)
 {
@@ -106,31 +92,4 @@ MyVector<double> GetParameters(int k, int n, int** M, double** Par)
   return Parameters;
 }
 
-void WriteAllWithTime(int N, int K, int nbODPA, int nbrupidentik, double Relative, double tPDPA, double tCart, const char* FileName)
-{
-  std::ofstream MyResults;
-  MyResults.open (FileName, std::ios_base::app);
-  if (!MyResults.is_open())
-  {
-	std::cerr << "I Can NOT open the file " << MyResults << " and I'm leaving this mess." << std::endl;
-	exit(1465);
-  }
-  MyResults.seekp(0,std::ios_base::end);
-  MyResults<< N << '\t' << K << '\t'<< nbODPA << '\t'<< nbrupidentik << '\t' << Relative << '\t' << tPDPA << '\t' << tCart  << '\t' << '\n' ;
-  MyResults.close();
-}
-
-void WriteTypeWithTime(int choice, int N, int K, int nbODPA, double tPDPA, double tODPA, const char* FileName)
-{
-  std::ofstream MyResults;
-  MyResults.open (FileName, std::ios_base::app);
-  if (!MyResults.is_open())
-  {
-	std::cerr << "I Can NOT open the file " << MyResults << " and I'm leaving this mess." << std::endl;
-	exit(1465);
-  }
-  MyResults.seekp(0,std::ios_base::end);
-  MyResults << choice << '\t' << N << '\t' << K << '\t' << nbODPA << '\t'  << tPDPA << '\t' << tODPA << '\n' ;
-  MyResults.close();
-}
 

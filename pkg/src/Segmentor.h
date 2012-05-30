@@ -54,10 +54,6 @@ public:
   Segmentor(Observations<DataTypeName>  &yc, int Kc, FunctionTypeName Mg, FunctionTypeName Mgam, SetTypeName *MS);
   ~Segmentor();
   void Initialize(Observations<DataTypeName>  &yc, int Kc, FunctionTypeName Mg, FunctionTypeName Mgam, SetTypeName *MS);
-  void Write(int nbk, const char* FileName);
-  void WriteParameters(int nbk, const char* FileName);
-  void WriteWithTheta(double MyTheta, int nbk, const char* FileName);
-  void WriteFunctionPhi(int K, double MyTheta, const char* FileName);
   int ChoosekBreak(double rup);
 private:
 	// call only by the constructor
@@ -81,87 +77,6 @@ Segmentor<SumOfFunctionsTypeName, FunctionTypeName, AtomicSetElementTypeName, Da
 }
 
 
-
-
-
-template <typename SumOfFunctionsTypeName, typename FunctionTypeName, typename AtomicSetElementTypeName, typename DataTypeName, typename SetTypeName>
-void Segmentor<SumOfFunctionsTypeName, FunctionTypeName, AtomicSetElementTypeName, DataTypeName, SetTypeName>::Write(int nbk, const char* FileName)
-{
-  std::ofstream MySegmentation;
-  MySegmentation.open (FileName, std::ios_base::app);
-  if (!MySegmentation.is_open())
-  {
-	std::cerr << "I Can NOT open the file " << MySegmentation << " and I'm leaving this mess." << std::endl;
-	exit(1465);
-  }
-  double Cost = C[nbk-1][n-1];
-   MyVector<int> TheDisplay = GetBreakpoints(nbk,n,M);
-  MySegmentation.seekp(0,std::ios_base::end);
-  MySegmentation << Cost << '\t' << nbk << '\t';
-   for (MyVector<int>::iterator I = TheDisplay.begin(); I != TheDisplay.end(); I++)
-      MySegmentation << *I << '\t';
-    MySegmentation << std::endl;
-  MySegmentation.close();
-}
-
-
-template <typename SumOfFunctionsTypeName, typename FunctionTypeName, typename AtomicSetElementTypeName, typename DataTypeName, typename SetTypeName>
-void Segmentor<SumOfFunctionsTypeName, FunctionTypeName, AtomicSetElementTypeName, DataTypeName, SetTypeName>::WriteParameters(int nbk, const char* FileName)
-{
-  std::ofstream MySegmentation;
-  MySegmentation.open (FileName, std::ios_base::app);
-  if (!MySegmentation.is_open())
-  {
-	std::cerr << "I Can NOT open the file " << MySegmentation << " and I'm leaving this mess." << std::endl;
-	exit(1465);
-  }
-  double Cost = C[nbk-1][n-1];
-  MyVector<double> TheDisplay = GetParameters(nbk,n,M,Par);
-  MySegmentation.seekp(0,std::ios_base::end);
-  MySegmentation << Cost << '\t' << nbk << '\t';
-   for (MyVector<double>::iterator I = TheDisplay.begin(); I != TheDisplay.end(); I++)
-      MySegmentation << *I << '\t';
-    MySegmentation << std::endl;
-  MySegmentation.close();
-}
-
-
-template <typename SumOfFunctionsTypeName, typename FunctionTypeName, typename AtomicSetElementTypeName, typename DataTypeName, typename SetTypeName>
-void Segmentor<SumOfFunctionsTypeName, FunctionTypeName, AtomicSetElementTypeName, DataTypeName, SetTypeName>::WriteWithTheta(double MyTheta, int nbk, const char* FileName)
-{
-  std::ofstream MySegmentation;
-  MySegmentation.open (FileName, std::ios_base::app);
-  if (!MySegmentation.is_open())
-  {
-	std::cerr << "I Can NOT open the file " << MySegmentation << " and I'm leaving this mess." << std::endl;
-	exit(1465);
-  }
-  double Cost = C[nbk-1][n-1];
-   MyVector<int> TheDisplay = GetBreakpoints(nbk,n,M);
-  MySegmentation.seekp(0,std::ios_base::end);
-  MySegmentation << MyTheta << '\t' << Cost << '\t' << nbk << '\t';
-   for (MyVector<int>::iterator I = TheDisplay.begin(); I != TheDisplay.end(); I++)
-      MySegmentation << *I << '\t';
-    MySegmentation << std::endl;
-  MySegmentation.close();
-}
-
-
-template <typename SumOfFunctionsTypeName, typename FunctionTypeName, typename AtomicSetElementTypeName, typename DataTypeName, typename SetTypeName>
-void Segmentor<SumOfFunctionsTypeName, FunctionTypeName, AtomicSetElementTypeName, DataTypeName, SetTypeName>::WriteFunctionPhi(int K, double MyTheta, const char* FileName)
-{
-  std::ofstream MySegmentation;
-  MySegmentation.open (FileName, std::ios_base::app);
-  if (!MySegmentation.is_open())
-  {
-	std::cerr << "I Can NOT open the file " << MySegmentation << " and I'm leaving this mess." << std::endl;
-	exit(1465);
-  }
-  MySegmentation.seekp(0,std::ios_base::end);
-  double Cost = C[K-1][n-1];
-  MySegmentation << K << '\t' << MyTheta << '\t' << Cost << '\n' ;
-  MySegmentation.close();
-}
 
 template <typename SumOfFunctionsTypeName, typename FunctionTypeName, typename AtomicSetElementTypeName, typename DataTypeName, typename SetTypeName>
 int Segmentor<SumOfFunctionsTypeName, FunctionTypeName, AtomicSetElementTypeName, DataTypeName, SetTypeName>::ChoosekBreak(double rup)
@@ -212,103 +127,6 @@ int Segmentor<SumOfFunctionsTypeName, FunctionTypeName, AtomicSetElementTypeName
   return K;
 }
 
-
-
-template <typename SumOfFunctionsTypeName, typename FunctionTypeName, typename AtomicSetElementTypeName, typename DataTypeName, typename SetTypeName>
-std::ostream &operator<<(std::ostream &s, const Segmentor<SumOfFunctionsTypeName, FunctionTypeName, AtomicSetElementTypeName, DataTypeName, SetTypeName> &Seg)
-{
-	int K = Seg.GetK();
-	int N = Seg.Getn();
-
-	int Choice;
-	std::cout << "How do you want me to display the segmentor? Type 1 if you want the complete matrices of cost and break-point, 2 if you only want one fixed number of segments, or 3 if you want the matrices of the different segmentation and their cost. ";
-	std::cin >> Choice;
-	if (Choice == 1)
-	{
-		s << "Affichage complet du Segmentor : " << std::endl;
-		s << "Affichage de la matrice C : " << std::endl;
-		for (int k = 0; k < K; k++)
-		{
-			for (int l = 0; l < N; l++)
-				s << Seg.GetC()[k][l] << '\t';
-			s << std::endl << std::endl;
-		}
-		s << std::endl;
-		s << "Affichage de la matrice M : " << std::endl;
-		for (int k = 0; k < K; k++)
-		{
-			for (int l = 0; l < N; l++)
-				s << Seg.GetM()[k][l] << '\t';
-			s << std::endl << std::endl;
-		}
-		s << std::endl;
-	}
-
-	else if (Choice == 2)
-	{
-	while (true)
-  {
-    int NbDisplayedSegments;
-    std::cout << "How many segments should I display? ";
-    std::cin >> NbDisplayedSegments;
-    MyVector<int> TheDisplay;
-    if (NbDisplayedSegments > 1)
-    {
-      int Prec = (Seg.GetM())[NbDisplayedSegments - 1][Seg.Getn() - 1];
-      TheDisplay.push_back(Prec + 1);
-      if (NbDisplayedSegments > 2)
-        for (int i = NbDisplayedSegments-2; i >= 1; i--)
-        {
-          TheDisplay.push_back((Seg.GetM())[i][Prec] + 1);
-          Prec = (Seg.GetM())[i][Prec];
-        }
-    }
-    TheDisplay.push_back(0);
-		TheDisplay.reverse();
-    TheDisplay.push_back(Seg.Getn());
-    for (MyVector<int>::iterator I = TheDisplay.begin(); I != TheDisplay.end(); I++)
-      s << *I << " ";
-    s << std::endl;
-    std::cout << "Shall I display another time this segmentor (Y/N)? "<<std::endl;
-    char Answer;
-    std::cin >> Answer;
-    if (Answer == 'N')
-      break;
-  }
-	// char Truc;
-	// std::cin >> Truc;
-  return s;
-	}
-	else
-	{
-	  s << "Breakpoint matrix" << std::endl;
-	  for (int k=1; k<(K+1); k++)
-	    {
-  	 MyVector<int> TheDisplay;
-  	  if (k > 1)
-  	  {
-  	    int Prec = (Seg.GetM())[k - 1][Seg.Getn() - 1];
-  	    TheDisplay.push_back(Prec + 1);
-  	    if (k > 2)
-  	      for (int i = k-2; i >= 1; i--)
-  	      {
-  	        TheDisplay.push_back((Seg.GetM())[i][Prec] + 1);
-  	        Prec = (Seg.GetM())[i][Prec];
-  	      }
-  	  }
-  	  TheDisplay.push_back(0);
-	  TheDisplay.reverse();
-	  TheDisplay.push_back(Seg.Getn());
-	  s << "Segmentation in " << k << " segments" << std::endl;
-	  for (MyVector<int>::iterator I = TheDisplay.begin(); I != TheDisplay.end(); I++)
-      		s << *I << '\t';
-    	  s << std::endl;
-		double Cost = (Seg.GetC())[k - 1][Seg.Getn() - 1];;
-
-		s << "Cost of the segmentation: " << Cost << std::endl;
-	    }
-	}
-}
 
 template <typename SumOfFunctionsTypeName, typename FunctionTypeName, typename AtomicSetElementTypeName, typename DataTypeName, typename SetTypeName>
 Segmentor<SumOfFunctionsTypeName, FunctionTypeName, AtomicSetElementTypeName, DataTypeName, SetTypeName>::Segmentor()
@@ -417,7 +235,7 @@ void Segmentor<SumOfFunctionsTypeName, FunctionTypeName, AtomicSetElementTypeNam
         if (S[*Tau].AlmostEmpty())
 	    CandidatesToRemove.push_back(*Tau);
       }
-      C[k][t] = PLUS_INFINITY; // TODO Remplace by C[k - 1][t]
+      C[k][t] = PLUS_INFINITY; 
       Par[k][t] = MINUS_INFINITY;
       for (MyVector<int>::iterator Tau = Candidates[k].begin(); Tau != Candidates[k].end(); Tau++)
 	{
@@ -437,8 +255,6 @@ void Segmentor<SumOfFunctionsTypeName, FunctionTypeName, AtomicSetElementTypeNam
       for (MyVector<int>::iterator CR = CandidatesToRemove.begin(); CR != CandidatesToRemove.end(); CR++)
         Candidates[k].remove(*CR);
       CandidatesToRemove.clear();
-      //std::cout<< " S(" << k  << ")(" << t  << ") "<<std::endl;
-      //std::cout<<S[k][t];
       if (!S[t].AlmostEmpty())
       {
         Candidates[k].push_back(t);

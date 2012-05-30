@@ -36,8 +36,6 @@ public:
   Observations();
   Observations(MyVector<T> &v);
   Observations(MyVector<int> &v, bool t=true);
-  Observations(std::string FileName, bool Binaire = false);
-  Observations(std::string FileName, int FirstIndex, int LastIndex, bool Binaire = false);
 
   void MeanVarSubsection(int start, int end, double* m, double* v);
   void ComputeMinMax();
@@ -129,98 +127,6 @@ Observations<T>::Observations(MyVector<int> &v, bool t)
   ComputeMeanVar();
 }
 
-template<typename DataTypeName>
-Observations<DataTypeName>::Observations(std::string FileName, bool Binaire)
-{
-  std::ifstream TheFile(FileName.c_str());
-  if (!TheFile.is_open())
-  {
-    std::cerr << "Can't open the file " << FileName << ". Getting out with errcode 200" << std::endl;
-    exit(200);
-  }
-	if (Binaire)
-	{
-		TheFile.seekg(0, std::ios::end);
-		int NbElements =TheFile.tellg() / sizeof(DataTypeName);
-		TheFile.seekg(0, std::ios::beg);
-		for (int i = 0; i < NbElements; i++)
-		{
-			DataTypeName CurElement;
-			TheFile.read((char *) &CurElement, 1 * sizeof(DataTypeName));
-			y.push_back(CurElement);
-		}
-	}
-	else
-	{
-		char *Buffer;
-		TheFile.seekg(0, std::ios::end);
-		int FileSize = TheFile.tellg();
-		Buffer = new char[FileSize];
-		TheFile.seekg(0, std::ios::beg);
-		TheFile.read(Buffer, FileSize * sizeof(char));
-		int BuffIndex = 0;
-		DataTypeName Res;
-		bool SansInteret;
-		while (NextNumber<DataTypeName>(Buffer, BuffIndex, FileSize, Res, SansInteret))
-			y.push_back(Res);
-		delete[] Buffer;
-	}
-	TheFile.close();
-	ComputeMinMax();
-	ComputeMeanVar();
-}
 
-template<typename DataTypeName>
-Observations<DataTypeName>::Observations(std::string FileName, int FirstIndex, int LastIndex, bool Binaire)
-{
-  std::ifstream TheFile(FileName.c_str());
-  if (!TheFile.is_open())
-  {
-    std::cerr << "Can't open the file " << FileName << ". Getting out with errcode 200" << std::endl;
-    exit(200);
-  }
-	if (Binaire)
-	{
-		int NbElements = LastIndex - FirstIndex + 1;
-		int begin = (FirstIndex - 1) * sizeof(DataTypeName);
-		TheFile.seekg(begin, std::ios::beg);
-		for (int i = 0; i < NbElements; i++)
-		{
-			DataTypeName CurElement;
-			TheFile.read((char *) &CurElement, 1 * sizeof(DataTypeName));
-			y.push_back(CurElement);
-		}
-	}
-	else
-	{
-		char *Buffer;
-		TheFile.seekg(0, std::ios::end);
-		int FileSize = TheFile.tellg();
-		int NbElements = LastIndex - FirstIndex + 1;
-		Buffer = new char[FileSize];
-		TheFile.seekg(0, std::ios::beg);
-		TheFile.read(Buffer, FileSize * sizeof(char));
-		int BuffIndex = 0;
-		DataTypeName Res;
-		bool SansInteret;
-		MyVector<DataTypeName> trash;
-		while (trash.size() < FirstIndex - 1)
-		{
-			bool NumberFound = NextNumber<DataTypeName>(Buffer, BuffIndex, FileSize, Res, SansInteret);
-			if (NumberFound)
-				trash.push_back(Res);
-		}
-		while (y.size() < NbElements)
-		{
-			bool NumberFound = NextNumber<DataTypeName>(Buffer, BuffIndex, FileSize, Res, SansInteret);
-			if (NumberFound)
-				y.push_back(Res);
-		}
-		delete[] Buffer;
-	}
-	TheFile.close();
-	ComputeMinMax();
-	ComputeMeanVar();
-}
 
 #endif
