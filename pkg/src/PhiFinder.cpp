@@ -23,11 +23,6 @@ PhiFinder::PhiFinder(const MyVector<int> &My, int Mk, int **SegM)
   int n = y.size();
   MyVector<int> TheDisplay = GetBreakpoints(k, n, SegM);
   TheDisplay.sort();
-  if (!TheDisplay.AscendingOrder())
-  {
-	std::cout << "Go sort your breakpoints" << std::endl;
-	exit(148);
-  }
   Breakpoints = TheDisplay;
 }
 

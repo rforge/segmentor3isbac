@@ -195,51 +195,7 @@ bool Segment::IsSubset(const Segment &S)
   return true;
 }
 
-Segment *Segment::Union(const Segment &Other)
-{
 
-  if ((Max < Other.GetLeft()) || (Min > Other.GetRight()) || ((Max < Other.GetLeft()) && (!RightBoundIncluded) && (!Other.LeftBoundIncluded)) || ((Min > Other.GetRight()) && (!LeftBoundIncluded) && (!Other.RightBoundIncluded)))
-  {
-    std::cerr << "I can NOT compute the union of these two segments : connexity violation." << std::endl;
-    std::cerr << "First segment: " << *this << std::endl;
-    std::cerr << "Second segment: " << Other << std::endl;
-    std::cerr << "Exiting with errcode 17 (and 'unhappyness & displeasement but dignity'...)" << std::endl;
-    exit(17);
-  }
-  Segment *S = new Segment;
-	if (Min < Other.GetLeft())
-	{
-		S->Min = Min;
-		S->LeftBoundIncluded = LeftBoundIncluded;
-	}
-	else if (Min == Other.GetLeft())
-	{
-		S->Min = Min;
-		S->LeftBoundIncluded = LeftBoundIncluded || Other.LeftBoundIncluded;
-	}
-	else // Other.Min > Min
-	{
-		S->Min = Other.GetLeft();
-		S->LeftBoundIncluded = Other.LeftBoundIncluded;
-	}
-	if (Max > Other.GetRight())
-	{
-		S->Max = Max;
-		S->RightBoundIncluded = RightBoundIncluded;
-	}
-	else if (Max == Other.GetRight())
-	{
-		S->Max = Max;
-		S->RightBoundIncluded = RightBoundIncluded || Other.RightBoundIncluded;
-	}
-	else
-	{
-		S->Max = Other.GetRight();
-		S->RightBoundIncluded = Other.RightBoundIncluded;
-	}
-	S->CheckAndRepair();
-  return S;
-}
 
 bool Segment::Empty()
 {

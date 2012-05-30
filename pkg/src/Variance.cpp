@@ -79,12 +79,6 @@ void Variance::ResetMe(double a, int t, double s, double m)
 
 Variance *Variance::operator+(Variance &Other)
 {
-  if (!Other.FirstElementSpecified)
-  {
-    std::cerr << "Can NOT sum a negative Binomiale whose First Element was NOT specified." << std::endl;
-    std::cerr << "Getting out with errcode 343" << std::endl;
-    exit(343);
-  }
   Variance *Res = new Variance;
   Res->A = (*this).A + Other.A;
   Res->S = (*this).S + Other.S;
@@ -131,48 +125,19 @@ void Variance::SpecializeMe(double Y)
 
 double Variance::operator()(double y, double sigma)
 {
-  if (sigma <= 0)
-  {
-    std::cerr << "Variance must be positive >0" << std::endl;
-    std::cerr << "Getting out with errcode 345" << std::endl;
-    exit(345);
-  }
   return log(sigma)/2 + (y-mu)*(y-mu)/(2*sigma);
 }
 
 
 double Variance::operator()(double sigma)
 {
-  if (FirstElementSpecified)
-  {
-    if (sigma <= 0)
-    {
-      std::cerr << "Variance must be positive >0" << std::endl;
-      std::cerr << "Getting out with errcode 345" << std::endl;
-      exit(345);
-    }
     return A + T * log(sigma)/2 + S/(2*sigma);
-  }
-  std::cerr << "Can NOT evaluate this function with an UNSPECIFIED first element." << std::endl;
-  std::cerr << "Getting out with errcode 150" << std::endl;
-  exit(150);
 }
 
 double Variance::operator[](double sigma)
 {
-  if (FirstElementSpecified)
-  {
-    if (sigma <= 0)
-    {
-      std::cerr << "Variance must be positive >0" << std::endl;
-      std::cerr << "Getting out with errcode 345" << std::endl;
-      exit(345);
-    }
+
     return (T / (2*sigma) - S /(2*sigma*sigma) );
-  }
-  std::cerr << "Can NOT evaluate this function with an UNSPECIFIED first element." << std::endl;
-  std::cerr << "Getting out with errcode 150" << std::endl;
-  exit(150);
 }
 
 double Variance::Min(Segment &LS)

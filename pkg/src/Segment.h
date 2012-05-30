@@ -35,7 +35,6 @@ public:
   Segment *Intersect(const Segment &);
   void SelfIntersect(const Segment &);
   MultiSegment *IntersectWithComplementary(Segment &Other);
-  Segment *Union(const Segment &);
   void Initialize(double MI, double PI, bool LBI = true, bool RBI = true);
 private:
 // call by Intersect...

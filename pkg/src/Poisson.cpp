@@ -74,29 +74,17 @@ double Poisson::operator()(int y, double mu)
 
 double Poisson::operator()(double mu)
 {
-  if (FirstElementSpecified)
-  {
     if (mu != 0)
       return A + B*mu - S * log(mu);
     return 0;
-  }
-  std::cerr << "Can NOT evaluate this function with an UNSPECIFIED first element." << std::endl;
-  std::cerr << "Getting out with errcode 150" << std::endl;
-  exit(150);
 }
 
 
 double Poisson::operator[](double mu)
 {
-  if (FirstElementSpecified)
-  {
     if (mu != 0)
       return B - S /mu;
     return 0;
-  }
-  std::cerr << "Can NOT evaluate this derivated function with an UNSPECIFIED first element." << std::endl;
-  std::cerr << "Getting out with errcode 151" << std::endl;
-  exit(151);
 }
 
 

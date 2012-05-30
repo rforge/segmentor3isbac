@@ -62,12 +62,6 @@ void BinNegative::ResetMe(double a, double s, double t)
 
 BinNegative *BinNegative::operator+(BinNegative &Other)
 {
-  if (!Other.FirstElementSpecified)
-  {
-    std::cerr << "Can NOT sum a negative Binomiale whose First Element was NOT specified." << std::endl;
-    std::cerr << "Getting out with errcode 343" << std::endl;
-    exit(343);
-  }
   BinNegative *Res = new BinNegative;
   Res->A = (*this).A + Other.A;
   Res->S = (*this).S + Other.S;
@@ -142,8 +136,6 @@ double BinNegative::operator()(int y, double mu)
 
 double BinNegative::operator()(double mu)
 {
-  if (FirstElementSpecified)
-  {
     if (mu == 0)
     {
        if (S == 0)
@@ -163,23 +155,13 @@ double BinNegative::operator()(double mu)
       else
         return A - S * log(mu) - T * log(1-mu);
     }
-  }
-  std::cerr << "Can NOT evaluate this function with an UNSPECIFIED first element." << std::endl;
-  std::cerr << "Getting out with errcode 150" << std::endl;
-  exit(150);
 }
 
 double BinNegative::operator[](double mu)
 {
-  if (FirstElementSpecified)
-  {
     if (mu !=0)
       return (- S / mu + T /(1-mu) );
     return 0;
-  }
-  std::cerr << "Can NOT evaluate this function with an UNSPECIFIED first element." << std::endl;
-  std::cerr << "Getting out with errcode 150" << std::endl;
-  exit(150);
 }
 
 double BinNegative::Min(Segment &LS)
@@ -238,8 +220,6 @@ double BinNegative::ArgMin(MultiSegment &MS)
 }
 
 
-// TODO Check this function
-// Commentary: in this function A is not necessary linked to Y as it should usually be.
 MultiSegment *BinNegative::LowerThanZero(MultiSegment &MS)
 {
   assert(FirstElementSpecified);
@@ -247,73 +227,66 @@ MultiSegment *BinNegative::LowerThanZero(MultiSegment &MS)
 	assert(S >= 0);
 	Segment I(MINUS_INFINITY,PLUS_INFINITY);
   if ((*this).S==0)
-	{
+  {
     if ((*this).T==0)
-		{
-			if ((*this).A<=0)
-				I.SetMe(MINUS_INFINITY,PLUS_INFINITY,false,false);
-			else
-				I.SetMe(PLUS_INFINITY,MINUS_INFINITY,false,false);
-		}
+    {
+	if ((*this).A<=0)
+		I.SetMe(MINUS_INFINITY,PLUS_INFINITY,false,false);
+	else
+		I.SetMe(PLUS_INFINITY,MINUS_INFINITY,false,false);
+    }
     else
-		{
-			double R = 1 - exp((*this).A/(*this).T);
-			//if ((*this).T>0)
-			I.SetMe(MINUS_INFINITY,R,false,true);
-			//else
-			//	I.SetMe(R, PLUS_INFINITY, true, false);
-		}
-	}
+    {
+	double R = 1 - exp((*this).A/(*this).T);
+	I.SetMe(MINUS_INFINITY,R,false,true);
+    }
+  }
   else
-	{
+  {
     if ((*this).T==0)
-		{
-			double R = exp((*this).A/(*this).S);
-			// if ((*this).S>0)
-				I.SetMe(R, PLUS_INFINITY, true, false);
-			// else
-			// 	I.SetMe(MinusInfinity,R,false,true);
-		}
+    {
+	double R = exp((*this).A/(*this).S);
+	I.SetMe(R, PLUS_INFINITY, true, false);
+    }
     else
+    {
+	double xmin = S/(S+T);
+	double TheMin = (*this)(xmin);
+	if (abs(TheMin) < EPSILON)
+		I.SetMe(xmin,xmin,true,true);
+	else if (TheMin > 0)
+		I.SetMe(PLUS_INFINITY,MINUS_INFINITY,false,false);
+	else
+	{
+		double FirstRoot, SecondRoot;
+		// Now computing the first root (near 0)
+		double V = xmin, U;
+		while ((*this)(V) < 0)
+			V /= 2;
+		U = 2 * V;
+		while (abs(V - U) > EPSILON)
 		{
-			double xmin = S/(S+T);
-			double TheMin = (*this)(xmin);
-			if (abs(TheMin) < EPSILON)
-				I.SetMe(xmin,xmin,true,true);
-			else if (TheMin > 0)
-				I.SetMe(PLUS_INFINITY,MINUS_INFINITY,false,false);
-			else
-			{
-				double FirstRoot, SecondRoot;
-
-				// Now computing the first root (near 0)
-				double V = xmin, U;
-				while ((*this)(V) < 0)
-					V /= 2;
-				U = 2 * V;
-				while (abs(V - U) > EPSILON)
-				{
-					U = V;
-					V = U - ((*this)(U)) / (T/(1-U) - S / U);
-				}
-				FirstRoot = V;
-
-				// Now computing the second root (near 1)
-				V = xmin;
-				while ((*this)(V) < 0)
-					V = (1 + V) / 2;
-				U = 2 * V - 1;
-				while (abs(V - U) > EPSILON)
-				{
-					U = V;
-					V = U - ((*this)(U)) / (T/(1-U) - S / U);
-				}
-				SecondRoot = V;
-				I.SetMe(FirstRoot, SecondRoot,true, true);
-			}
+			U = V;
+			V = U - ((*this)(U)) / (T/(1-U) - S / U);
 		}
+		FirstRoot = V;
+
+		// Now computing the second root (near 1)
+		V = xmin;
+		while ((*this)(V) < 0)
+			V = (1 + V) / 2;
+		U = 2 * V - 1;
+		while (abs(V - U) > EPSILON)
+		{
+			U = V;
+			V = U - ((*this)(U)) / (T/(1-U) - S / U);
+		}
+		SecondRoot = V;
+		I.SetMe(FirstRoot, SecondRoot,true, true);
 	}
-	return MS.Intersect(I);
+    }
+  }
+  return MS.Intersect(I);
 
 }
 

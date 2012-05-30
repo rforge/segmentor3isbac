@@ -1,5 +1,3 @@
-
-
 #ifndef _BinNegative_h_
 #define _BinNegative_h_
 
@@ -18,11 +16,9 @@ public:
   double T;
   double S;
   BinNegative();
-  // BinNegative(int);
   BinNegative(double y, int n);
   BinNegative(double a, double s, double t);
   void ResetMe();
-  // void ResetMe(int);
   void ResetMe(double y, int n);
   void ResetMe(double a, double s, double t);
 

@@ -12,7 +12,6 @@
 #define _Constants_h_
 
 
-// TODO modifier les noms des constantes : par exemple PlusInfinity doit etre ecrit PLUS_INFINITY
 #define PLUS_INFINITY 100000000
 #define MINUS_INFINITY -100000000
 #define EPSILON 0.0000000001

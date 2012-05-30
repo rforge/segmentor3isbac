@@ -64,20 +64,12 @@ double Trinome::operator()(double y, double mu)
 
 double Trinome::operator()(double mu)
 {
-  if (FirstElementSpecified)
      return ((a2*mu+a1)*mu + a0);
-  std::cerr << "Can NOT evaluate this function with an UNSPECIFIED first element." << std::endl;
-  std::cerr << "Getting out with errcode 150" << std::endl;
-  exit(150);
 }
 
 double Trinome::operator[](double mu)
 {
-  if (FirstElementSpecified)
      return (2*a2*mu+a1);
-  std::cerr << "Can NOT evaluate this function with an UNSPECIFIED first element." << std::endl;
-  std::cerr << "Getting out with errcode 150" << std::endl;
-  exit(150);
 }
 
 double Trinome::Min(Segment &S)
