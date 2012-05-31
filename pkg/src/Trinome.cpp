@@ -4,7 +4,6 @@
 #include "Constants.h"
 #include <math.h>
 #include <algorithm>
-#include <assert.h>
 #include <iostream>
 
 Trinome::Trinome()
@@ -76,7 +75,6 @@ double Trinome::Min(Segment &S)
 {
   if (S.Empty())
     return PLUS_INFINITY;
-  assert(FirstElementSpecified);
   double m = -a1 / (2 * a2);
   if ((a2 > 0) && (S.Contains (m)))
     return (*this)(m);
@@ -87,7 +85,6 @@ double Trinome::ArgMin(Segment &S)
 {
   if (S.Empty())
     return MINUS_INFINITY;
-  assert(FirstElementSpecified);
   double m = -a1 / (2 * a2);
   if ((a2 > 0) && (S.Contains (m)))
     return m;
@@ -136,7 +133,6 @@ double Trinome::ArgMin(MultiSegment &MS)
 
 void Trinome::operator*=(double x)
 {
-  assert(FirstElementSpecified);
   a0 *= x;
   a1 *= x;
   a2 *= x;
@@ -144,7 +140,6 @@ void Trinome::operator*=(double x)
 
 MultiSegment *Trinome::LowerThanZero(MultiSegment &S)
 {
-  assert(FirstElementSpecified);
 	if (a2 != 0)
 	{
 		bool SignChanged = false;

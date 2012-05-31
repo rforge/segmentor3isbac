@@ -5,7 +5,6 @@
 #include <iostream>
 #include <math.h>
 #include <algorithm>
-#include <assert.h>
 #include <cmath>
 #include "GeneralFunctionsDeclarations.h"
 
@@ -142,7 +141,6 @@ double Variance::operator[](double sigma)
 
 double Variance::Min(Segment &LS)
 {
-  assert(FirstElementSpecified);
   double xmin = MINUS_INFINITY;
   if (T>0)
     xmin = S/T;
@@ -153,7 +151,6 @@ double Variance::Min(Segment &LS)
 
 double Variance::ArgMin(Segment &LS)
 {
-  assert(FirstElementSpecified);
   double xmin = MINUS_INFINITY;
   if (T>0)
     xmin = S/T;
@@ -206,13 +203,9 @@ double Variance::ArgMin(MultiSegment &MS)
 }
 
 
-// TODO Check this function
 // Commentary: in this function A is not necessary linked to Y as it should usually be.
 MultiSegment *Variance::LowerThanZero(MultiSegment &MS)
 {
-  assert(FirstElementSpecified);
-  assert(T >= 0);
-  assert(S >= 0);
   Segment I(MINUS_INFINITY,PLUS_INFINITY);
   if (S==0)
   {

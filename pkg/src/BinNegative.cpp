@@ -5,7 +5,6 @@
 #include <iostream>
 #include <math.h>
 #include <algorithm>
-#include <assert.h>
 #include <cmath>
 #include "GeneralFunctionsDeclarations.h"
 
@@ -166,27 +165,23 @@ double BinNegative::operator[](double mu)
 
 double BinNegative::Min(Segment &LS)
 {
-  assert(FirstElementSpecified);
   double xmin = S/(S+T);
   return (*this)(xmin);
 }
 
 double BinNegative::ArgMin(Segment &LS)
 {
-  assert(FirstElementSpecified);
   return S/(S+T);
 }
 
 double BinNegative::Min()
 {
-  assert(FirstElementSpecified);
   double xmin = S/(S+T);
   return (*this)(xmin);
 }
 
 double BinNegative::ArgMin()
 {
-  assert(FirstElementSpecified);
   return S/(S+T);
 }
 
@@ -222,10 +217,7 @@ double BinNegative::ArgMin(MultiSegment &MS)
 
 MultiSegment *BinNegative::LowerThanZero(MultiSegment &MS)
 {
-  assert(FirstElementSpecified);
-	assert(T >= 0);
-	assert(S >= 0);
-	Segment I(MINUS_INFINITY,PLUS_INFINITY);
+  Segment I(MINUS_INFINITY,PLUS_INFINITY);
   if ((*this).S==0)
   {
     if ((*this).T==0)

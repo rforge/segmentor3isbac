@@ -18,6 +18,4 @@
 #include "Trinome.h"
 
 
-std::ostream &operator<<(std::ostream &s, const Segment &S);
-std::ostream &operator<<(std::ostream &s, MultiSegment &S);
 

@@ -4,9 +4,7 @@
 #include <iostream>
 #include <math.h>
 #include <algorithm>
-#include <assert.h>
 #include <cmath>
-#include "GeneralFunctionsDeclarations.h"
 #include "GeneralFunctions.h"
 
 

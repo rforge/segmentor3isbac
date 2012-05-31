@@ -12,7 +12,6 @@
 #include <iostream>
 #include <cmath>
 #include <algorithm>
-#include <assert.h>
 #include "MyVector.h"
 
 
@@ -92,7 +91,6 @@ double Poisson::operator[](double mu)
 double Poisson::Min(Segment &Q)
 {
   double Res = 0;
-  assert(FirstElementSpecified);
   if((*this).B != 0)
 	{
 		if ((*this).S !=0)
@@ -117,7 +115,6 @@ double Poisson::Min(Segment &Q)
 double Poisson::ArgMin(Segment &Q)
 {
   double Res = 0;
-  assert(FirstElementSpecified);
   if((*this).B != 0)
   {
     if ((*this).S !=0)
@@ -176,7 +173,6 @@ double Poisson::ArgMin()
 
 MultiSegment *Poisson::LowerThanZero(MultiSegment &MS)
 {
-  assert(FirstElementSpecified);
 	Segment I(MINUS_INFINITY,PLUS_INFINITY);
 
   if ((*this).B==0)
