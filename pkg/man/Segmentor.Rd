@@ -10,7 +10,7 @@
 Segmentor(data=numeric(), file=character(), model=1, Kmax = 15, param = 0.15)
 }
 \arguments{
-function(data=numeric(), file=character(), model=1, Kmax = 15, param = 0.15)
+
 \item{data}{A vector of observations to be segmented. Must have no missing values.}
 \item{file}{Instead of data, the location of a file containing the data to segment. This file must have one numeric value per line and have no missing values. The filename MUST consist of the whole path to the file.}
 \item{model}{Emission distribution of observed data, 1: poisson (default), 2: normal-homoscedastic, 3: negative binomial or 4: normal-heteroscedastic}
