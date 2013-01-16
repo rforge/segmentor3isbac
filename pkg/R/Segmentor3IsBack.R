@@ -70,15 +70,18 @@ Segmentor.default <-function(data=numeric(), model=1, Kmax = 15, theta = numeric
   if (model==2) 
   {
     variance <- rep(0,Kmax)
-    variance[1] = variance[1] + breaks[1,1]*var(data[1:breaks[1,1]])/n
+    if (breaks[1,1]>2)
+    	variance[1] = variance[1] + breaks[1,1]*var(data[1:breaks[1,1]])/n
     for (j in 2:Kmax)
     {
-	for (i in 2:j)
-	{
-	  var = (breaks[j,i]-breaks[j,i-1])*var(data[(breaks[j,i-1]+1):breaks[j,i]])/n
-	  variance[j] = variance[j]+var
-	}
-	variance[j] = variance[j] + breaks[j,1]*var(data[1:breaks[j,1]])/n
+			for (i in 2:j)
+			{
+				var = 0
+				if (breaks[j,i]-breaks[j,i-1]>1)
+					var = (breaks[j,i]-breaks[j,i-1])*var(data[(breaks[j,i-1]+1):breaks[j,i]])/n
+				variance[j] = variance[j]+var
+			}
+			variance[j] = variance[j] + breaks[j,1]*var(data[1:breaks[j,1]])/n
     }
     likelihood = likelihood /(2*variance) + n/2*log(2*pi*variance)
     model.dist="normal"
