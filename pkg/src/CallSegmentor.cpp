@@ -20,7 +20,7 @@
     Poisson MBgam(0, 0, 0);
     Segment Sp(LesObservations.MinData, LesObservations.MaxData);
     MultiSegment S(Sp);
-    Segmentor<Poisson, Poisson, Segment, int, MultiSegment> TheSegmentor(LesObservations, K, MBg, MBgam, &S);
+    Segmentor<Poisson, Poisson,  int> TheSegmentor(LesObservations, K, MBg, MBgam, &S);
     for (int k=0; k<K; k++)
     {
          MyVector<int> Temp=GetBreakpoints(k+1, n, TheSegmentor.GetM());
@@ -50,7 +50,7 @@
     BinNegative MBgam(0, 0, Theta);
     Segment Sp(LesObservations.MinData, LesObservations.MaxData);
     MultiSegment S(Sp);
-    Segmentor<BinNegative, BinNegative, Segment, int, MultiSegment> TheSegmentor(LesObservations, K, MBg, MBgam, &S);
+    Segmentor<BinNegative, BinNegative,  int> TheSegmentor(LesObservations, K, MBg, MBgam, &S);
     for (int k=0; k<K; k++)
     {
          MyVector<int> Temp=GetBreakpoints(k+1, n, TheSegmentor.GetM());
@@ -77,7 +77,7 @@ void CallSegmentorNormal(int *Size, int *KMax, double *Data, int *Breakpoints, d
     Trinome MBgam(0, 0, 0);
     Segment Sp(LesObservations.MinData, LesObservations.MaxData);
     MultiSegment S(Sp);
-    Segmentor<Trinome, Trinome, Segment, double, MultiSegment> TheSegmentor(LesObservations, K, MBg, MBgam, &S);
+    Segmentor<Trinome, Trinome,  double> TheSegmentor(LesObservations, K, MBg, MBgam, &S);
     for (int k=0; k<K; k++)
     {
             MyVector<int> Temp=GetBreakpoints(k+1, n, TheSegmentor.GetM());
@@ -105,7 +105,7 @@ void CallSegmentorVariance(int *Size, int *KMax, double *Mmu, double *Data, int 
     double maax = std::max((LesObservations.MaxData-mu)*(LesObservations.MaxData-mu),(LesObservations.MinData-mu)*(LesObservations.MinData-mu));
     Segment Sp(0, maax);
     MultiSegment S(Sp);
-    Segmentor<Variance, Variance, Segment, double, MultiSegment> TheSegmentor(LesObservations, K, MVg, MVgam, &S);
+    Segmentor<Variance, Variance,  double> TheSegmentor(LesObservations, K, MVg, MVgam, &S);
     for (int k=0; k<K; k++)
     {
             MyVector<int> Temp=GetBreakpoints(k+1, n, TheSegmentor.GetM());

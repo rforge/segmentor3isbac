@@ -65,26 +65,21 @@ Segmentor.default <-function(data=numeric(), model=1, Kmax = 15, theta = numeric
   if (model==1) 
   {
       model.dist="Poisson"
+      likelihood=likelihood+sum(lgamma(data))
       Segmentor.res=list(model=model.dist,breaks=breaks,parameters=parameters,likelihood=likelihood)
   }
   if (model==2) 
   {
-    variance <- rep(0,Kmax)
-    if (breaks[1,1]>2)
-    	variance[1] = variance[1] + breaks[1,1]*var(data[1:breaks[1,1]])/n
-    for (j in 2:Kmax)
-    {
-			for (i in 2:j)
-			{
-				var = 0
-				if (breaks[j,i]-breaks[j,i-1]>1)
-					var = (breaks[j,i]-breaks[j,i-1])*var(data[(breaks[j,i-1]+1):breaks[j,i]])/n
-				variance[j] = variance[j]+var
-			}
-			variance[j] = variance[j] + breaks[j,1]*var(data[1:breaks[j,1]])/n
-    }
-    likelihood = likelihood /(2*variance) + n/2*log(2*pi*variance)
-    model.dist="normal"
+		data1<-data[-(1:3)]
+		data2<-data[-c(1,2,n)]
+		data3<-data[-c(1,n-1,n)]
+		data4<-data[-c(n-2,n-1,n)]
+		d<-c(0.1942, 0.2809, 0.3832, -0.8582)
+		v2<-d[1]*data1+d[2]*data2+d[3]*data3+d[4]*data4
+		v2<-v2*v2
+		var<-sum(v2)/(n-3)
+    likelihood = likelihood /(2*var) + n/2*log(2*pi*var)
+    model.dist="Normal"
     Segmentor.res=list(model=model.dist,breaks=breaks,parameters=parameters,likelihood=likelihood)
   }
   if (model==3) 
@@ -102,6 +97,117 @@ Segmentor.default <-function(data=numeric(), model=1, Kmax = 15, theta = numeric
   Segmentor.res
 
 }
+
+SelectModel <-function(x,penalty="oracle",seuil=n/log(n),keep=FALSE)
+{
+	if ((penalty!='BIC') & (penalty!='mBIC') & (penalty!='AIC') & (penalty!='oracle'))
+		stop("penalty must be BIC, mBIC, AIC or oracle")
+	if (class(x)!="Segmentor")
+		stop("x must be an object of class Segmentor returned by the Segmentor function")
+	n<-x$breaks[1,1]
+	Kmax<-length(x$breaks[,1])
+	sizenr<-function(k) {	vec<-sum(log(diff(c(1,x$breaks[k,1:k]))))}
+	saut<-function(Lv, pen,Kseq,seuil=sqrt(n)/log(n),biggest=TRUE)
+	{
+		J=-Lv;Kmax=length(J); k=1;kv=c();dv=c();pv=c();dmax=1
+		while (k<Kmax) {
+				pk=(J[(k+1):Kmax]-J[k])/(pen[k]-pen[(k+1):Kmax])
+				pm=max(pk); dm=which.max(pk); dv=c(dv,dm); kv=c(kv,k); pv=c(pv,pm)
+				if (dm>dmax){  
+				  dmax=dm; kmax=k; pmax=pm  
+				  }
+				k=k+dm
+		 } 
+		if (biggest)
+		{
+			pv=c(pv,0); kv=c(kv,Kmax); dv=diff(kv); dmax=max(dv); rt=max(dv); rt=which(dv==rt)
+			pmax=pv[rt[length(rt)]]
+			alpha=2*pmax
+			km=kv[alpha>=pv]; Kh =Kseq[km[1]] 
+			return(c(Kh,alpha))
+		} else
+		{
+			paux<-pv[which(kv<=seuil)]
+			alpha<-2*min(paux)
+			km=kv[alpha>=pv];	Kh =Kseq[km[1]] 
+			return(c(Kh,alpha))	
+		}
+	}
+	if (x$model=="Poisson")
+	{
+		if(penalty=='mBIC')
+			K<-which.min(crit<-x$likelihood+0.5*sapply(1:Kmax,sizenr)+(1:Kmax-0.5)*log(n))
+		if (penalty=='BIC')
+			K<-which.min(crit<-x$likelihood+1:K*log(n))
+		if (penalty=='AIC')
+			K<-which.min(crit<-x$likelihood+1:K*2)
+		if (penalty=='oracle')
+		{
+			Kseq=1:Kmax
+			pen=Kseq*(1+4*sqrt(1.1+log(n/Kseq)))*(1+4*sqrt(1.1+log(n/Kseq)))
+			r1=saut(-x$likelihood[Kseq],pen,Kseq)
+			crit1<-x$likelihood[Kseq]+r1[2]*pen
+			r2=saut(-x$likelihood[Kseq],pen,Kseq,seuil,biggest=FALSE)
+			crit2<-x$likelihood[Kseq]+r2[2]*pen
+			crit<-cbind(crit1,crit2)
+			K<-c(r1[1],r2[1])
+		}	
+	} else if (x$model=="Negative binomial")
+	{
+		if(penalty=='mBIC')
+			stop("no mBIC for Negative Binomial model")
+		if (penalty=='BIC')
+			K<-which.min(x$likelihood+((1:Kmax)+1)*log(n))
+		if (penalty=='AIC')
+			K<-which.min(x$likelihood+((1:Kmax)+1)*2)	
+		if (penalty=='oracle')
+		{
+			Kseq=1:Kmax
+			pen=Kseq*(1+4*sqrt(1.1+log(n/Kseq)))*(1+4*sqrt(1.1+log(n/Kseq)))
+			r1=saut(-x$likelihood[Kseq],pen,Kseq)
+			crit1<-x$likelihood[Kseq]+r1[2]*pen
+			r2=saut(-x$likelihood[Kseq],pen,Kseq,seuil,biggest=FALSE)
+			crit2<-x$likelihood[Kseq]+r2[2]*pen
+			crit<-cbind(crit1,crit2)
+			K<-c(r1[1],r2[1])
+		}	
+	} else if (x$model=='Normal')
+	{
+		if(penalty=='mBIC')
+			K<-which.min(x$likelihood+0.5*sapply(1:Kmax,sizenr)+(1:Kmax-0.5)*log(n))
+		if (penalty=='BIC')
+			K<-which.min(x$likelihood+((1:Kmax)+1)*log(n))
+		if (penalty=='AIC')
+			K<-which.min(x$likelihood+((1:Kmax)+1)*2)		
+		if (penalty=='oracle')
+		{
+			Kseq=1:Kmax
+			pen=Kseq*(2*log(n/Kseq)+5)
+			r1=saut(-x$likelihood[Kseq],pen,Kseq)
+			crit1<-x$likelihood[Kseq]+r1[2]*pen
+			r2=saut(-x$likelihood[Kseq],pen,Kseq,seuil,biggest=FALSE)
+			crit2<-x$likelihood[Kseq]+r2[2]*pen
+			crit<-cbind(crit1,crit2)
+			K<-c(r1[1],r2[1])
+		}	
+	} else
+	{
+		if(penalty=='mBIC')
+			stop("no mBIC for Variance model")
+		if (penalty=='BIC')
+			K<-which.min(x$likelihood+((1:K)+1)*log(n))
+		if (penalty=='AIC')
+			K<-which.min(x$likelihood+((1:K)+1)*2)		
+		if(penalty=='oracle')
+			stop("no oracle penalty for Variance model")
+	}
+	if (keep)
+		res<-list(K=K,criterion=crit)
+	else res<-K
+	return(res)
+}
+
+
 
 print.Segmentor <-function(x,...)
 {
@@ -129,7 +235,7 @@ print.Segmentor <-function(x,...)
     cat("\n Table of parameters: ")
     if (x$model=="Poisson")
       cat("(mean of the signal in each segment) \n")
-    if (x$model=="normal")
+    if (x$model=="Normal")
       cat("(mean of the signal in each segment) \n")
     if (x$model=="Negative binomial")
       cat("(success-probability of the signal in each segment) \n")

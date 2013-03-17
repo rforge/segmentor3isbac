@@ -1,6 +1,6 @@
 Package: Segmentor3IsBack
-Version: 1.3
-Date: 2013-01-18
+Version: 1.4
+Date: 2013-03-18
 Title: A Fast Segmentation Algorithm
 Author: Alice Cleynen, Guillem Rigaill, Michel Koskas
 Maintainer: Alice Cleynen <alice.cleynen@agroparistech.fr>
