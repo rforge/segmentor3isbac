@@ -36,51 +36,10 @@ public:
   Observations();
   Observations(MyVector<T> &v);
   Observations(MyVector<int> &v, bool t=true);
-	Observations(std::string FileName, bool Binaire = false);
   void MeanVarSubsection(int start, int end, double* m, double* v);
   void ComputeMinMax();
   void ComputeMeanVar();
 };
-
-template<typename DataTypeName>
-Observations<DataTypeName>::Observations(std::string FileName, bool Binaire)
-{
-  std::ifstream TheFile(FileName.c_str());
-  if (!TheFile.is_open())
-  {
-    std::cerr << "Can't open the file " << FileName << ". Getting out with errcode 200" << std::endl;
-    exit(200);
-  }
-	if (Binaire)
-	{
-		TheFile.seekg(0, std::ios::end);
-		int NbElements =TheFile.tellg() / sizeof(DataTypeName);
-		TheFile.seekg(0, std::ios::beg);
-		for (int i = 0; i < NbElements; i++)
-		{
-			DataTypeName CurElement;
-			TheFile.read((char *) &CurElement, 1 * sizeof(DataTypeName));
-			y.push_back(CurElement);
-		}
-	}
-	else
-	{
-		char *Buffer;
-		TheFile.seekg(0, std::ios::end);
-		int FileSize = TheFile.tellg();
-		Buffer = new char[FileSize];
-		TheFile.seekg(0, std::ios::beg);
-		TheFile.read(Buffer, FileSize * sizeof(char));
-		int BuffIndex = 0;
-		DataTypeName Res;
-		bool SansInteret;
-		while (NextNumber<DataTypeName>(Buffer, BuffIndex, FileSize, Res, SansInteret))
-			y.push_back(Res);
-		delete[] Buffer;
-	}
-	TheFile.close();
-	ComputeMinMax();
-}
 
 template<typename T>
 void Observations<T>::ComputeMinMax()
