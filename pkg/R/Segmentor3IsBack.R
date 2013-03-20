@@ -65,7 +65,7 @@ Segmentor.default <-function(data=numeric(), model=1, Kmax = 15, theta = numeric
   if (model==1) 
   {
       model.dist="Poisson"
-      likelihood=likelihood+sum(lgamma(data))
+      likelihood=likelihood+sum(lgamma(data+1))
       Segmentor.res=list(model=model.dist,breaks=breaks,parameters=parameters,likelihood=likelihood)
   }
   if (model==2) 
