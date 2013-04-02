@@ -8,7 +8,7 @@
 #include "MyVector.h"
 
 
- void CallSegmentorPoisson(int *Size, int *KMax, int *Data, int *Breakpoints, double *Parameters, double *Likelihood)
+ void CallSegmentorPoisson(int *Size, int *KMax, int *Data, int *Breakpoints, double *Parameters, double *Likelihood, double *Cost)
   {
     int K= *KMax;
     int n = *Size;
@@ -21,22 +21,25 @@
     Segment Sp(LesObservations.MinData, LesObservations.MaxData);
     MultiSegment S(Sp);
     Segmentor<Poisson, Poisson,  int> TheSegmentor(LesObservations, K, MBg, MBgam, &S);
+    double **C = TheSegmentor.GetC();
     for (int k=0; k<K; k++)
     {
-         MyVector<int> Temp=GetBreakpoints(k+1, n, TheSegmentor.GetM());
-         MyVector<double> TempParam=GetParameters(k+1, n, TheSegmentor.GetM(), TheSegmentor.GetPar());
-         for (int i=0; i<(k+1); i++)
-         {
-	      Breakpoints[k*K+i] = Temp[i+1];
-	      Parameters[k*K+i] = TempParam[i];
-	 }
-	 Likelihood[k] = TheSegmentor.GetC()[k][n-1];
+			MyVector<int> Temp=GetBreakpoints(k+1, n, TheSegmentor.GetM());
+			MyVector<double> TempParam=GetParameters(k+1, n, TheSegmentor.GetM(), TheSegmentor.GetPar());
+			for (int i=0; i<(k+1); i++)
+			{
+				Breakpoints[k*K+i] = Temp[i+1];
+				Parameters[k*K+i] = TempParam[i];
+			}
+			for (int j=0; j<n; j++)
+				Cost[k*n+j] = C[k][j];
+	 		Likelihood[k] = TheSegmentor.GetC()[k][n-1];
     }
   return;
 }
 
 
- void CallSegmentorBinNeg(int *Size, int *KMax, double *theta, int *Data, int *Breakpoints, double *Parameters, double *Likelihood)
+ void CallSegmentorBinNeg(int *Size, int *KMax, double *theta, int *Data, int *Breakpoints, double *Parameters, double *Likelihood, double *Cost)
 {
     int K= *KMax;
     int n = *Size;
@@ -51,6 +54,7 @@
     Segment Sp(LesObservations.MinData, LesObservations.MaxData);
     MultiSegment S(Sp);
     Segmentor<BinNegative, BinNegative,  int> TheSegmentor(LesObservations, K, MBg, MBgam, &S);
+    double **C = TheSegmentor.GetC();
     for (int k=0; k<K; k++)
     {
          MyVector<int> Temp=GetBreakpoints(k+1, n, TheSegmentor.GetM());
@@ -60,12 +64,14 @@
 	      Breakpoints[k*K+i] = Temp[i+1];
 	      Parameters[k*K+i] = TempParam[i];
 	 }
+	 for (int j=0; j<n; j++)
+				Cost[k*n+j] = C[k][j];
 	 Likelihood[k] = TheSegmentor.GetC()[k][n-1];
     }
   return;
 }
 
-void CallSegmentorNormal(int *Size, int *KMax, double *Data, int *Breakpoints, double *Parameters, double *Likelihood)
+void CallSegmentorNormal(int *Size, int *KMax, double *Data, int *Breakpoints, double *Parameters, double *Likelihood, double *Cost)
 {
     int K= *KMax;
     int n = *Size;
@@ -78,6 +84,7 @@ void CallSegmentorNormal(int *Size, int *KMax, double *Data, int *Breakpoints, d
     Segment Sp(LesObservations.MinData, LesObservations.MaxData);
     MultiSegment S(Sp);
     Segmentor<Trinome, Trinome,  double> TheSegmentor(LesObservations, K, MBg, MBgam, &S);
+    double **C = TheSegmentor.GetC();
     for (int k=0; k<K; k++)
     {
             MyVector<int> Temp=GetBreakpoints(k+1, n, TheSegmentor.GetM());
@@ -87,11 +94,13 @@ void CallSegmentorNormal(int *Size, int *KMax, double *Data, int *Breakpoints, d
 	      Breakpoints[k*K+i] = Temp[i+1];
 	      Parameters[k*K+i] = TempParam[i];
 	    }
+	    for (int j=0; j<n; j++)
+				Cost[k*n+j] = C[k][j];
 	    Likelihood[k] = TheSegmentor.GetC()[k][n-1];
     }
 }
 
-void CallSegmentorVariance(int *Size, int *KMax, double *Mmu, double *Data, int *Breakpoints, double *Parameters, double *Likelihood)
+void CallSegmentorVariance(int *Size, int *KMax, double *Mmu, double *Data, int *Breakpoints, double *Parameters, double *Likelihood, double *Cost)
 {
     int K= *KMax;
     int n = *Size;
@@ -106,6 +115,7 @@ void CallSegmentorVariance(int *Size, int *KMax, double *Mmu, double *Data, int 
     Segment Sp(0, maax);
     MultiSegment S(Sp);
     Segmentor<Variance, Variance,  double> TheSegmentor(LesObservations, K, MVg, MVgam, &S);
+    double **C = TheSegmentor.GetC();
     for (int k=0; k<K; k++)
     {
             MyVector<int> Temp=GetBreakpoints(k+1, n, TheSegmentor.GetM());
@@ -115,6 +125,8 @@ void CallSegmentorVariance(int *Size, int *KMax, double *Mmu, double *Data, int 
 	      Breakpoints[k*K+i] = Temp[i+1];
 	      Parameters[k*K+i] = TempParam[i];
 	    }
+	    for (int j=0; j<n; j++)
+				Cost[k*n+j] = C[k][j];
 	    Likelihood[k] = TheSegmentor.GetC()[k][n-1];
     }
 }
