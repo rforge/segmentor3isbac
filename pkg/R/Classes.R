@@ -1,5 +1,5 @@
 setClass("Segmentor",
-         representation(model = "character", breaks= "matrix", parameters="matrix", likelihood="matrix", Kmax="numeric",Cost="matrix",mean="numeric",overdispersion="numeric"),
+         representation(data = "numeric", model = "character", breaks= "matrix", parameters="matrix", likelihood="matrix", Kmax="numeric", Cost="matrix", Pos = "matrix", mean="numeric", overdispersion="numeric"),
          prototype(model = "Poisson", Kmax=15),
 )
 
@@ -37,12 +37,30 @@ setMethod("getModel", "Segmentor",
 	}
 )
 
+setGeneric ("getData",
+	function(object){ standardGeneric ("getData" )}
+)
+setMethod("getData", "Segmentor",
+	function (object){
+	return ( object@data )
+	}
+)
+
 setGeneric ("getCost",
 	function(object){ standardGeneric ("getCost" )}
 )
 setMethod("getCost", "Segmentor",
 	function (object){
 	return ( object@Cost )
+	}
+)
+
+setGeneric ("getPos",
+	function(object){ standardGeneric ("getPos" )}
+)
+setMethod("getPos", "Segmentor",
+	function (object){
+	return ( object@Pos )
 	}
 )
 

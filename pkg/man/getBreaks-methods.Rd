@@ -1,17 +1,17 @@
-\name{getCost-methods}
+\name{getBreaks-methods}
 \docType{methods}
-\alias{getCost-methods}
-\alias{getCost,Segmentor-method}
-\title{ ~~ Methods for Function \code{getCost}  ~~}
+\alias{getBreaks-methods}
+\alias{getBreaks,Segmentor-method}
+\title{ ~~ Methods for Function \code{getBreaks}  ~~}
 \description{
- ~~ Methods for function \code{getCost}  ~~
+ ~~ Methods for function \code{getBreaks}  ~~
 }
 \section{Methods}{
 \describe{
 
 \item{\code{signature(object = "Segmentor")}}{
-	Retrieves the cost of segmenting signal up to j in i segments
+	Retrieves the change-point location of segmentations
 }
 }}
 \keyword{methods}
-\keyword{Cost}
+\keyword{Breaks}
