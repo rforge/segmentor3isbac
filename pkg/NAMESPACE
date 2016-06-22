@@ -21,3 +21,6 @@ exportMethods(
 		getPos,
 		getCompression
 )
+
+import("methods")
+importFrom("methods",show)
