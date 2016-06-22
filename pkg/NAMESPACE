@@ -24,3 +24,5 @@ exportMethods(
 
 import("methods")
 importFrom("methods",show)
+importFrom("stats", "median")
+ importFrom("utils", "str")

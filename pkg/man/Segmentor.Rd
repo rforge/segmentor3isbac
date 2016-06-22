@@ -9,16 +9,17 @@
 
 \usage{
 Segmentor(data=numeric(), model=1, Kmax = 15, phi = numeric(), 
-m = numeric(), keep=FALSE, compress = TRUE)
+m = numeric(), keep=FALSE, bounds=c(0,0), compress = TRUE)
 }
 
 \arguments{
   \item{data}{A vector of observations to be segmented. Must have no missing values.}
   \item{model}{Integer between 1 and 4 giving the modelisation of the observed data, 1: poisson (default), 2: normal-homoscedastic, 3: negative binomial, 4: normal-heteroscedastic or 5: exponential}
-  \item{Kmax}{The maximum number of segments wanted for the data. The Segmentor will find all optimal segmentations in 1 to Kmax segments.}
+  \item{Kmax}{The maximum number oe segments wanted for the data. The Segmentor will find all optimal segmentations in 1 to Kmax segments.}
   \item{phi}{Needed only for the Negative Binomial distribution: the value of the inverse of the overdispersion parameter. If the user does not enter a value, the package uses a modified version of Johnson and Kotz's estimator where the mean is replaced by the median. }
   \item{m}{Needed only for Normal Heteroscedastic distribution: the value of the constant mean. If not entered, the function uses the empirical mean of the data.}
   \item{keep}{a boolean stating whether or not to keep Cost and Position matrices}
+  \item{bounds}{optional lower and upper bounds on the parameter to segment : will fasten the pruning and hence the algorithm if some values are not allowed (e.g. non negative numbers for Poisson distribution)}
   \item{compress}{A boolean stating whether data should be compressed prior to segmentation}
 }
 
